@@ -1,7 +1,8 @@
 # Maintainer: Cedric Girard <girard.cedric@gmail.com>
 
 pkgname=libcrossguid-git
-pkgver=r35.8f399e8
+_gitname=libcrossguid
+pkgver=20150803.8f399e8
 pkgrel=1
 pkgdesc="Lightweight cross platform C++ GUID/UUID library"
 arch=('i686' 'x86_64')
@@ -10,16 +11,16 @@ license=('MIT')
 makedepends=('git')
 provides=('libcrossguid')
 conflicts=('libcrossguid')
-source=('libcrossguid::git+https://github.com/graeme-hill/crossguid.git')
+source=("$_gitname::git+https://github.com/graeme-hill/crossguid.git")
 md5sums=('SKIP')
 
 pkgver() {
-  cd "$srcdir"/libcrossguid
-  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  cd libcrossguid
+  git log -1 --date=short --format="%cd.%h" | tr -d '-'
 }
 
 build() {
-  cd "$srcdir"/libcrossguid
+  cd libcrossguid
 
   g++ -c guid.cpp -o guid.o $CXXFLAGS -std=c++11 -DGUID_LIBUUID
   ar rvs libcrossguid.a guid.o
@@ -32,12 +33,12 @@ build() {
 }
 
 check(){
-  cd "$srcdir"/libcrossguid
+  cd libcrossguid
   ./test
 }
 
 package() {
-  cd "$srcdir"/libcrossguid
+  cd libcrossguid
   install -D -m644 libcrossguid.a "${pkgdir}/usr/lib/libcrossguid.a"
   install -D -m644 guid.h "${pkgdir}/usr/include/guid.h"
   install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
