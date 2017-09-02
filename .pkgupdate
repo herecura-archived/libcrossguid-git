@@ -3,5 +3,5 @@ update_pkgver=""
 pwd=$PWD
 cd $SRCDEST/$_gitname
 git fetch --all -p
-update_pkgver=$(git log -1 --date=short --format="%cd.%h" | tr -d '-')
+update_pkgver=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 cd $pwd

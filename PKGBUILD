@@ -1,47 +1,43 @@
-# Maintainer: Cedric Girard <girard.cedric@gmail.com>
+# Maintainer: BlackEagle <ike DOT devolder AT gmail DOT com>
+# Contributer: graysky <graysky AT archlinux DOT us>
+# Contributer: Cedric Girard <girard.cedric@gmail.com>
 
 pkgname=libcrossguid-git
 _gitname=libcrossguid
-pkgver=20170617.595c83b
+epoch=1
+pkgver=0.2.2.r0.g5b45cdd
 pkgrel=1
 pkgdesc="Lightweight cross platform C++ GUID/UUID library"
 arch=('i686' 'x86_64')
 url="https://github.com/graeme-hill/crossguid"
 license=('MIT')
-makedepends=('git')
+makedepends=('git' 'cmake')
 provides=('libcrossguid')
 conflicts=('libcrossguid')
 source=("$_gitname::git+https://github.com/graeme-hill/crossguid.git")
-md5sums=('SKIP')
+sha512sums=('SKIP')
 
 pkgver() {
-  cd libcrossguid
-  git log -1 --date=short --format="%cd.%h" | tr -d '-'
+    cd "$_gitname"
+    git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-  cd libcrossguid
+    cd "$_gitname"
 
-  g++ -c guid.cpp -o guid.o $CXXFLAGS -std=c++11 -DGUID_LIBUUID
-  ar rvs libcrossguid.a guid.o
-
-  g++ -c test.cpp -o test.o $CXXFLAGS  -std=c++11
-  g++ -c testmain.cpp -o testmain.o $CXXFLAGS
-  g++ test.o guid.o testmain.o -o test $CXXFLAGS -luuid
-  chmod +x test
-
+    cmake .
+    make
 }
 
 check(){
-  cd libcrossguid
-  ./test
+    cd "$_gitname"
+    ./xgtest
 }
 
 package() {
-  cd libcrossguid
-  install -D -m644 libcrossguid.a "${pkgdir}/usr/lib/libcrossguid.a"
-  install -D -m644 guid.h "${pkgdir}/usr/include/guid.h"
-  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    cd "$_gitname"
+    install -D -m644 libxg.a "${pkgdir}/usr/lib/libxg.a"
+    install -D -m644 Guid.hpp "${pkgdir}/usr/include/Guid.hpp"
+    install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
 
-# vim:set ts=2 sw=2 et:
